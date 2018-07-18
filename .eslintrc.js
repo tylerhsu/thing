@@ -1,0 +1,58 @@
+module.exports = {
+  parser: 'babel-eslint',
+  extends: [
+    'airbnb',
+  ],
+  plugins: [
+    'babel'
+  ],
+  env: {
+    browser: true
+  },
+  globals: {
+    $: false,
+    require: false,
+    envConfig: false,
+    "expect": true,
+    "require": true,
+    "beforeEach": true,
+    "beforeAll": true,
+    "afterEach": true,
+    "afterAll": true,
+    "describe": true,
+    "it": true,
+    "done": true,
+    "jest": true,
+    "pit": true,
+    "xdescribe": true,
+    "xit": true
+  },
+  rules: {
+    'arrow-parens': ['error', 'always'],
+    'babel/generator-star-spacing': 1,
+    'generator-star-spacing': 0,
+    'global-require': 0,
+    'import/no-named-as-default': 0,
+    'max-len': [2, 1000, 2],
+    'new-cap': ['error', { capIsNew: false }],
+    'no-param-reassign': ['error', { props: false }],
+    'no-plusplus': 0,
+    'no-confusing-arrow': 0,
+    'no-underscore-dangle': 0,
+    'no-use-before-define': 'error',
+    'react/forbid-prop-types': 0,
+    'react/jsx-filename-extension': [1, { 'extensions': ['.js', '.jsx'] }],
+    'react/no-children-prop': 0,
+    'react/require-default-props': 0,
+    'react/require-extension': [0],
+    'import/no-extraneous-dependencies': ['error', { "devDependencies": true }],
+    'class-methods-use-this': [0, { exceptMethods: [] }],
+    'jsx-a11y/no-static-element-interactions': 0,
+    'jsx-a11y/anchor-is-valid': ['error', { 'components': ['Link']}],
+    'import/prefer-default-export': 0,
+    'no-console': 'error',
+    'no-alert': 'error',
+    'func-names': 'error',
+    'import/first': 0,
+  },
+};

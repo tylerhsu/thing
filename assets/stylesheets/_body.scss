@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0px;
+  font-family: 'Hind', sans-serif;
+  color: #474747;
+  font-size: 11px;
+}
+
+h2, h3 {
+  color: #636363;
+}
+
+h2 {
+  font-size: 28px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.container {
+  padding: 0px 20px;
+  margin-top: 100px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.btn {
+  color: #474747;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}

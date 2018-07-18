@@ -1,0 +1,17 @@
+.labeled-text {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  margin-right: 50px;
+  margin-bottom: 10px;
+
+  .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9B9B9B;
+  }
+  .value {
+    font-size: 13px;
+  }
+}
