@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import Icon from 'material-ui/Icon';
 import Card from 'material-ui/Card';
 import { withStyles } from 'material-ui/styles';
 
-import PatientList from '../components/PatientList';
+import { shape as userShape } from '../reducers/auth';
+import { shape as patientsShape, fetchPatients } from '../reducers/patients';
 
-import { patients } from '../dummyData';
+import PatientList from '../components/PatientList';
 
 const styles = {
   welcomeMessage: {
@@ -29,33 +31,70 @@ const styles = {
   patients: {
     marginTop: 40,
   },
+  error: {
+    color: 'red'
+  }
 };
 
-const DoctorHome = ({ classes }) => (
-  <div className="container">
-    <h2 className={classes.welcomeMessage}>Welcome back, Dr. McGonagall.</h2>
-    <div className={classes.patients}>
-      { patients ?
-        <div>
-          <Card className={classes.searchWrapper}>
-            <Icon className={classes.searchIcon}>search</Icon>
-            <TextField
-              name="search"
-              placeholder="Search patients"
-              className={classes.search}
-              inputProps={{ style: { fontSize: 12 } }}
-            />
-          </Card>
-          <PatientList patients={patients} />
+class DoctorHome extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentWillMount() {
+    if (!this.props.patients.payload) {
+      this.props.fetchPatients();
+    }
+  }
+
+  render() {
+    const { user, patients, classes } = this.props;
+    return (
+      <div className="container">
+        <h2 className={classes.welcomeMessage}>Welcome back, Dr. {user.payload.lastName}.</h2>
+        <div className={classes.patients}>
+          { patients.payload && patients.payload.length && !patients.error &&
+            <div>
+              <Card className={classes.searchWrapper}>
+                <Icon className={classes.searchIcon}>search</Icon>
+                <TextField
+                  name="search"
+                  placeholder="Search patients"
+                  className={classes.search}
+                  inputProps={{ style: { fontSize: 12 } }}
+                />
+              </Card>
+              <PatientList patients={patients.payload} />
+            </div>
+          }
+          { patients.payload && !patients.payload.length && !patients.error &&
+            <div>You don\'t have any patients.</div>
+          }
+          { patients.error &&
+            <div className={classes.error}>There was an error retrieving patients</div>
+          }
         </div>
-          : <div>{'You don\'t have any patients.'}</div>
-        }
-    </div>
-  </div>
-);
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = ({user, patients}) => ({
+    user,
+    patients
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchPatients: () => {
+    dispatch(fetchPatients());
+  },
+});
 
 DoctorHome.propTypes = {
+  user: userShape.isRequired,
+  patients: patientsShape.isRequired,
+  fetchPatients: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DoctorHome);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DoctorHome));

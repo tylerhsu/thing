@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 
-import { login } from '../reducers/auth';
+import { login, shape as userShape } from '../reducers/auth';
 
 const styles = {
   textField: {
@@ -17,6 +18,11 @@ const styles = {
     fontWeight: 100,
     marginTop: 10,
   },
+  error: {
+    color: 'red',
+    marginTop: 10,
+    textAlign: 'center'
+  }
 };
 
 class Login extends Component {
@@ -34,7 +40,14 @@ class Login extends Component {
   }
 
   render() {
-    const { attemptLogin, classes } = this.props;
+    const { attemptLogin, user, location, classes } = this.props;
+
+    if (user.payload && user.payload.id) {
+      return (
+        <Redirect to={location && location.state && location.state.from ? location.state.from : '/'} />
+      );
+    }
+    
     return (
       <div className="login-container">
         <div>
@@ -72,6 +85,7 @@ class Login extends Component {
                 evt.preventDefault();
                 attemptLogin(this.state.email, this.state.password);
               }}
+              type="submit"
               variant="raised"
               className={classes.button}
               color="primary"
@@ -81,10 +95,15 @@ class Login extends Component {
             </Button>
           </div>
         </form>
+        { user.error &&
+          <div className={classes.error}>{user.payload.response && user.payload.response.data || user.payload.message}</div>
+        }
       </div>
     );
   }
 }
+
+const mapStateToProps = ({ user }) => ({ user });
 
 const mapDispatchToProps = (dispatch) => ({
   attemptLogin: (email, password) => {
@@ -94,7 +113,8 @@ const mapDispatchToProps = (dispatch) => ({
 
 Login.propTypes = {
   attemptLogin: PropTypes.func,
+  user: userShape.isRequired,
   classes: PropTypes.object.isRequired,
 };
 
-export default connect(() => ({}), mapDispatchToProps)(withStyles(styles)(Login));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Login));

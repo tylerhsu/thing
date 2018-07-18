@@ -5,16 +5,18 @@ import { connect } from 'react-redux';
 
 import Login from '../containers/Login';
 
+import { shape as userShape } from '../reducers/auth';
+
 const Home = ({ user }) => (
   <Route
     path="/"
-    render={() => {
-      if (user && user.role === 'doctor') {
+    render={(props) => {
+      if (user.payload && user.payload.role === 'doctor') {
         return <Redirect to="/dashboard" />;
-      } else if (user && user.role === 'patient') {
+      } else if (user.payload && user.payload.role === 'patient') {
         return <Redirect to="/account" />;
       }
-      return <Login />;
+      return <Login {...props} />;
     }}
   />
 );
@@ -22,9 +24,7 @@ const Home = ({ user }) => (
 const mapStateToProps = ({ user }) => ({ user });
 
 Home.propTypes = {
-  user: PropTypes.shape({
-    role: PropTypes.string,
-  }),
+  user: userShape
 };
 
 export default connect(mapStateToProps)(Home);

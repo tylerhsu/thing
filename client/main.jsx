@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import PrivateRoute from './containers/PrivateRoute';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
@@ -38,10 +39,10 @@ render(
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/login" component={Login} />
-            <Route path="/dashboard" component={DoctorHome} />
-            <Route path="/patient/:id" component={Patient} />
-            <Route path="/account" component={PatientHome} />
-            <Route path="/request-appointment" component={NewApptRequest} />
+            <PrivateRoute path="/dashboard" component={DoctorHome} requiredRole="doctor" />
+            <PrivateRoute path="/patient/:id" component={Patient} requiredRole="doctor" />
+            <PrivateRoute path="/account" component={PatientHome} requiredRole="patient" />
+            <PrivateRoute path="/request-appointment" component={NewApptRequest} />
           </Switch>
         </div>
       </Router>
