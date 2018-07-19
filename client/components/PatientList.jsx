@@ -38,7 +38,7 @@ const PatientList = ({ patients, history, classes }) => (
         >
           <Divider />
           <div className={classes.patientInfo}>
-            {patient.name}
+            {patient.firstName} {patient.lastName}
           </div>
         </div>))
     }

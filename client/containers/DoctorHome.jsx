@@ -42,7 +42,7 @@ class DoctorHome extends Component {
   }
 
   componentWillMount() {
-    if (!this.props.patients.payload) {
+    if (!this.props.patients.loading && !this.props.patients.payload) {
       this.props.fetchPatients();
     }
   }

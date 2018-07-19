@@ -31,6 +31,33 @@ export const login = (email, password) =>
       .catch((error) => dispatch(authenticateError(error)));
   }
 
+const FETCH_ME_BEGIN = 'FETCH_ME_BEGIN';
+const FETCH_ME_SUCCESS = 'FETCH_ME_SUCCESS';
+const FETCH_ME_ERROR = 'FETCH_ME_ERROR';
+
+export const fetchMeBegin = () => ({
+  type: FETCH_ME_BEGIN
+});
+
+export const fetchMeSuccess = (user) => ({
+  type: FETCH_ME_SUCCESS,
+  payload: user
+});
+
+export const fetchMeError = (error) => ({
+  type: FETCH_ME_ERROR,
+  payload: error,
+  error: true
+});
+
+export const fetchMe = () =>
+  (dispatch) => {
+    dispatch(fetchMeBegin());
+    axios.get('/api/me')
+      .then((res) => dispatch(fetchMeSuccess(res.data)))
+      .catch((error) => dispatch(fetchMeError(error)));
+  }
+
 const defaultState = {
   loading: null,
   payload: null,
@@ -52,6 +79,7 @@ const authReducer = (state = defaultState, action) => {
   let newState;
   switch (action.type) {
     case AUTHENTICATE_BEGIN:
+    case FETCH_ME_BEGIN:
       newState = {
         loading: true,
         payload: null,
@@ -59,6 +87,7 @@ const authReducer = (state = defaultState, action) => {
       };
       break;
     case AUTHENTICATE_SUCCESS:
+    case FETCH_ME_SUCCESS:
       newState = {
         loading: false,
         payload: action.payload,
@@ -66,6 +95,7 @@ const authReducer = (state = defaultState, action) => {
       };
       break;
     case AUTHENTICATE_ERROR:
+    case FETCH_ME_ERROR:
       newState = {
         loading: false,
         payload: action.payload,

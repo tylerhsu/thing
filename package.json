@@ -21,6 +21,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
+    "express-session": "^1.15.6",
     "isvalid": "^1.6.6",
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",

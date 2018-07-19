@@ -23,6 +23,7 @@ import Login from './containers/Login';
 import DoctorHome from './containers/DoctorHome';
 import PatientHome from './containers/PatientHome';
 import Patient from './containers/DoctorPatient';
+import FetchMe from './containers/FetchMe';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import NewApptRequest from './components/NewApptRequest';
@@ -35,6 +36,7 @@ render(
     <MuiThemeProvider theme={theme}>
       <Router>
         <div>
+          <FetchMe />
           <Navbar />
           <Switch>
             <Route exact path="/" component={Home} />
@@ -42,7 +44,7 @@ render(
             <PrivateRoute path="/dashboard" component={DoctorHome} requiredRole="doctor" />
             <PrivateRoute path="/patient/:id" component={Patient} requiredRole="doctor" />
             <PrivateRoute path="/account" component={PatientHome} requiredRole="patient" />
-            <PrivateRoute path="/request-appointment" component={NewApptRequest} />
+            <PrivateRoute path="/request-appointment" component={NewApptRequest} requiredRole="patient" />
           </Switch>
         </div>
       </Router>

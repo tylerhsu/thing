@@ -28,7 +28,13 @@ export default Router()
     }
     const result = await bcrypt.compare(req.body.password, user.password_digest);
     if (result) {
+      req.session.userId = user.id;
       return res.status(200).send(_.omit(user, ['password', 'password_digest']));
     }
     return res.status(401).send('Incorrect password');
+  })
+
+  .get('/logout', async (req, res) => {
+    req.session.destroy()
+    res.redirect('/');
   });
