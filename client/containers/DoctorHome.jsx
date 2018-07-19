@@ -5,9 +5,10 @@ import TextField from 'material-ui/TextField';
 import Icon from 'material-ui/Icon';
 import Card from 'material-ui/Card';
 import { withStyles } from 'material-ui/styles';
+import _ from 'lodash';
 
 import { shape as userShape } from '../reducers/auth';
-import { shape as patientsShape, fetchPatients } from '../reducers/patients';
+import { shape as patientsShape, fetchPatients, searchPatients } from '../reducers/patients';
 
 import PatientList from '../components/PatientList';
 
@@ -39,6 +40,8 @@ const styles = {
 class DoctorHome extends Component {
   constructor(props) {
     super(props);
+
+    this.handleSearchChange = _.debounce(this.handleSearchChange.bind(this), 200);
   }
 
   componentWillMount() {
@@ -47,32 +50,33 @@ class DoctorHome extends Component {
     }
   }
 
+  handleSearchChange(value) {
+    this.props.searchPatients(value);
+  }
+
   render() {
-    const { user, patients, classes } = this.props;
+    const { user, patients, filteredPatients, classes } = this.props;
     return (
       <div className="container">
         <h2 className={classes.welcomeMessage}>Welcome back, Dr. {user.payload.lastName}.</h2>
         <div className={classes.patients}>
-          { patients.payload && patients.payload.length && !patients.error &&
-            <div>
-              <Card className={classes.searchWrapper}>
-                <Icon className={classes.searchIcon}>search</Icon>
-                <TextField
-                  name="search"
-                  placeholder="Search patients"
-                  className={classes.search}
-                  inputProps={{ style: { fontSize: 12 } }}
-                />
-              </Card>
-              <PatientList patients={patients.payload} />
-            </div>
-          }
-          { patients.payload && !patients.payload.length && !patients.error &&
-            <div>You don\'t have any patients.</div>
-          }
-          { patients.error &&
-            <div className={classes.error}>There was an error retrieving patients</div>
-          }
+          <div>
+            <Card className={classes.searchWrapper}>
+              <Icon className={classes.searchIcon}>search</Icon>
+              <TextField
+                name="search"
+                placeholder="Search patients"
+                className={classes.search}
+                inputProps={{ style: { fontSize: 12 } }}
+                defaultValue={patients.search}
+                onChange={(evt) => this.handleSearchChange(evt.target.value)}
+              />
+            </Card>
+            { !patients.error ?
+              <PatientList patients={filteredPatients} searchTerm={patients.search} /> :
+              <div className={classes.error}>There was an error retrieving patients</div>
+            }
+          </div>
         </div>
       </div>
     );
@@ -80,20 +84,28 @@ class DoctorHome extends Component {
 }
 
 const mapStateToProps = ({user, patients}) => ({
-    user,
-    patients
-});
+  user,
+  patients,
+  filteredPatients: Array.isArray(patients.payload) && patients.search ?
+    patients.payload.filter(filterPatient(patients.search)) :
+    Array.isArray(patients.payload) ? patients.payload : []
+})
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchPatients: () => {
-    dispatch(fetchPatients());
-  },
-});
+function filterPatient(searchTerm) {
+  return (patient) => `${patient.firstName} ${patient.lastName}`.match(new RegExp(_.escapeRegExp(searchTerm), 'ig'));
+}
+
+const mapDispatchToProps = {
+  fetchPatients,
+  searchPatients
+};
 
 DoctorHome.propTypes = {
   user: userShape.isRequired,
   patients: patientsShape.isRequired,
+  filteredPatients: PropTypes.arrayOf(PropTypes.object),
   fetchPatients: PropTypes.func.isRequired,
+  searchPatients: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
 

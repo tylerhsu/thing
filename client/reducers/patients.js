@@ -5,6 +5,8 @@ const FETCH_PATIENTS_BEGIN = 'FETCH_PATIENTS_BEGIN';
 const FETCH_PATIENTS_SUCCESS = 'FETCH_PATIENTS_SUCCESS';
 const FETCH_PATIENTS_ERROR = 'FETCH_PATIENTS_ERROR';
 
+const SEARCH_PATIENTS = 'SEARCH_PATIENTS';
+
 const fetchPatientsBegin = () => ({
   type: FETCH_PATIENTS_BEGIN
 });
@@ -28,9 +30,15 @@ export const fetchPatients = () =>
       .catch((error) => dispatch(fetchPatientsError(error)));
   }
 
+export const searchPatients = (search) => ({
+  type: SEARCH_PATIENTS,
+  search
+});
+
 const defaultState = {
   loading: null,
   payload: null,
+  search: '',
   error: false
 };
 
@@ -40,6 +48,7 @@ export const shape = PropTypes.shape({
     PropTypes.arrayOf(PropTypes.object),
     PropTypes.instanceOf(Error)
   ]),
+  search: PropTypes.string,
   error: PropTypes.bool
 });
 
@@ -50,6 +59,7 @@ const patientsReducer = (state = defaultState, action) => {
       newState = {
         loading: true,
         payload: null,
+        search: state.search,
         error: false
       };
       break;
@@ -57,6 +67,7 @@ const patientsReducer = (state = defaultState, action) => {
       newState = {
         loading: false,
         payload: action.payload,
+        search: state.search,
         error: false
       };
       break;
@@ -64,7 +75,14 @@ const patientsReducer = (state = defaultState, action) => {
       newState = {
         loading: false,
         payload: action.payload,
+        search: state.search,
         error: true
+      };
+      break;
+    case SEARCH_PATIENTS:
+      newState = {
+        ...state,
+        search: (action.search || '').trim()
       };
       break;
     default:

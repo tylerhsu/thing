@@ -21,32 +21,37 @@ const styles = {
   },
 };
 
-const PatientList = ({ patients, history, classes }) => (
+const PatientList = ({ patients, searchTerm, history, classes }) => (
   <Paper className={classes.container}>
     <h3>Patients</h3>
     {
-      patients.map((patient) => (
-        <div
-          key={patient.id}
-          onClick={() => {
-            history.push(`/patient/${patient.id}`);
-          }}
-          onKeyPress={() => {
-            history.push(`/patient/${patient.id}`);
-          }}
-          className={classes.patientRow}
-        >
-          <Divider />
-          <div className={classes.patientInfo}>
-            {patient.firstName} {patient.lastName}
-          </div>
-        </div>))
+      patients && patients.length ? (
+        patients.map((patient) => (
+          <div
+            key={patient.id}
+            onClick={() => {
+                history.push(`/patient/${patient.id}`);
+            }}
+            onKeyPress={() => {
+                history.push(`/patient/${patient.id}`);
+            }}
+            className={classes.patientRow}
+            >
+            <Divider />
+            <div className={classes.patientInfo}>
+              {patient.firstName} {patient.lastName}
+            </div>
+          </div>))
+      ) : (
+        <div>No patients{ searchTerm ? ` matching "${searchTerm}"` : ''}</div>
+      )
     }
   </Paper>
 );
 
 PatientList.propTypes = {
   patients: PropTypes.arrayOf(PropTypes.object),
+  searchTerm: PropTypes.string,
   history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };
