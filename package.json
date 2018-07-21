@@ -26,7 +26,7 @@
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",
     "material-ui": "^1.0.0-beta.40",
-    "moment": "^2.22.0",
+    "moment": "^2.22.2",
     "nodemon": "^1.11.0",
     "prop-types": "^15.5.10",
     "react": "^15.4.2",

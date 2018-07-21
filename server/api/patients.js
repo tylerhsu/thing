@@ -14,7 +14,7 @@ function hydratePatientData(patient) {
       .pick(userProperties)
       .value(),
     appointments: Api.Appointment.get({ patient_id: patient.id }),
-    address: Api.Address.get({ id: patient.address_id }),
+    address: Api.Address.get({ id: patient.address_id })[0],
   };
 }
 
@@ -24,6 +24,9 @@ export default Router()
     res.status(200).send(allPatients.map(hydratePatientData));
   })
   .get('/:id', (req, res) => {
-    const patient = Api.Patient.get(req.params.id);
+    const patient = Api.Patient.get({ id: req.params.id })[0];
+    if (!patient) {
+      return res.status(404).send();
+    }
     res.status(200).send(hydratePatientData(patient));
   });
