@@ -1,9 +1,9 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-const FETCH_PATIENT_BEGIN = 'FETCH_PATIENT_BEGIN';
-const FETCH_PATIENT_SUCCESS = 'FETCH_PATIENT_SUCCESS';
-const FETCH_PATIENT_ERROR = 'FETCH_PATIENT_ERROR';
+export const FETCH_PATIENT_BEGIN = 'FETCH_PATIENT_BEGIN';
+export const FETCH_PATIENT_SUCCESS = 'FETCH_PATIENT_SUCCESS';
+export const FETCH_PATIENT_ERROR = 'FETCH_PATIENT_ERROR';
 
 const fetchPatientBegin = () => ({
   type: FETCH_PATIENT_BEGIN

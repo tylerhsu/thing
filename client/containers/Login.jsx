@@ -105,11 +105,9 @@ class Login extends Component {
 
 const mapStateToProps = ({ user }) => ({ user });
 
-const mapDispatchToProps = (dispatch) => ({
-  attemptLogin: (email, password) => {
-    dispatch(login(email, password));
-  },
-});
+const mapDispatchToProps = {
+  attemptLogin: login
+};
 
 Login.propTypes = {
   attemptLogin: PropTypes.func,

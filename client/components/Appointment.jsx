@@ -6,6 +6,7 @@ import Button from 'material-ui/Button';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
+import moment from 'moment';
 
 const styles = {
   card: {
@@ -28,6 +29,9 @@ const styles = {
   action: {
     fontSize: 12,
   },
+  pointer: {
+    cursor: 'pointer'
+  }
 };
 
 class Appointment extends Component {
@@ -51,12 +55,13 @@ class Appointment extends Component {
 
   render() {
     const { appt, classes } = this.props;
+    const clickable = appt.status === DB_CONSTANTS.STATUSES.PENDING;
     return (
-      <Card key={appt.datetime} className={classes.card} onClick={appt.status === 'pending' ? this.toggleDrawer : () => {}}>
-        <CardContent>
+      <Card key={appt.id} className={classes.card}>
+        <CardContent className={clickable ? classes.pointer : null} onClick={clickable ? this.toggleDrawer : () => {}}>
           <div className={classes.content}>
             <div>
-              <div className={classes.header}>{appt.datetime}</div>
+              <div className={classes.header}>{moment(appt.datetime).format('MMMM Do, YYYY')} ({moment(appt.datetime).fromNow()})</div>
               <div>
                 {appt.purpose}
               </div>
@@ -64,7 +69,7 @@ class Appointment extends Component {
           </div>
         </CardContent>
         {
-          appt.status === 'pending' ?
+          appt.status === DB_CONSTANTS.STATUSES.PENDING ?
             <Collapse isOpened={this.state.drawerOpen}>
               <Divider />
               <CardContent>
@@ -103,7 +108,7 @@ class Appointment extends Component {
 
 Appointment.propTypes = {
   appt: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     status: PropTypes.string,
     purpose: PropTypes.string,
     datetime: PropTypes.string,
