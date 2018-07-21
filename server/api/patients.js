@@ -15,6 +15,7 @@ function hydratePatientData(patient) {
       .value(),
     appointments: Api.Appointment.get({ patient_id: patient.id }),
     address: Api.Address.get({ id: patient.address_id })[0],
+    files: Api.File.get({ patient_id: patient.id })
   };
 }
 
@@ -24,9 +25,12 @@ export default Router()
     res.status(200).send(allPatients.map(hydratePatientData));
   })
   .get('/:id', (req, res) => {
-    const patient = Api.Patient.get({ id: req.params.id })[0];
-    if (!patient) {
-      return res.status(404).send('Patient not found');
+    const result = Api.Patient.get({ id: req.params.id });
+    if (result.error) {
+      res.status(500).send(result);
+    } else if (!result.length) {
+      res.status(404).send('Patient not found');
+    } else {
+      res.status(200).send(hydratePatientData(result[0]));
     }
-    res.status(200).send(hydratePatientData(patient));
   });

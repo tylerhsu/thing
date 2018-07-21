@@ -15,7 +15,7 @@ function createApi(model) {
           .push({ ...validData, id: uuid() })
           .write();
         if (_.isEmpty(result)) return { error: true };
-        return result;
+        return result[result.length - 1];
       } catch (error) {
         return { error };
       }

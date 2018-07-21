@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Avatar from 'material-ui/Avatar';
 import List, { ListItem, ListItemAvatar, ListItemText } from 'material-ui/List';
 import { withStyles } from 'material-ui/styles';
+
+import { shape as patientShape } from '../reducers/patient';
+import { shape as filesShape, createFile, deleteFile } from '../reducers/files';
 
 const styles = {
   container: {
@@ -28,10 +33,22 @@ class Files extends Component {
     super(props);
 
     this.handleFileUpload = this.handleFileUpload.bind(this);
+    this.handleFileDelete = this.handleFileDelete.bind(this);
   }
 
-  handleFileUpload() {
-    // Do something
+  handleFileUpload(e) {
+    const file = e.target.files[0];
+    const { patient } = this.props;
+    this.props.createFile({
+      file,
+      patient_id: patient.payload.id
+    });
+  }
+
+  handleFileDelete(id) {
+    return (e) => {
+      this.props.deleteFile(id);
+    }
   }
 
   render() {
@@ -39,20 +56,24 @@ class Files extends Component {
     return (
       <div className={classes.container}>
         {
-          files.length ?
+          files.payload && files.payload.length ?
             <List dense className={classes.fileList}>
               {
-                files.map((file) => (
+                files.payload.map((file) => (
                   <ListItem key={file && file.id}>
                     <ListItemAvatar>
                       <Avatar>
                         <Icon>folder</Icon>
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={file.name} />
+                    <a href={`/api/files/${file.id}/download`}>
+                      <ListItemText primary={file.name} />
+                    </a>
+                    <IconButton onClick={this.handleFileDelete(file.id)}><Icon>delete_forever</Icon></IconButton>
                   </ListItem>
                 ))}
-            </List> : null
+            </List> :
+            <div className={classes.fileList}>No files</div>
         }
         <input
           id="file"
@@ -68,9 +89,16 @@ class Files extends Component {
   }
 }
 
+const mapStateToProps = ({ patient, files }) => ({ patient, files });
+
+const mapDispatchToProps = { createFile, deleteFile };
+
 Files.propTypes = {
   classes: PropTypes.object.isRequired,
-  files: PropTypes.array,
+  patient: patientShape.isRequired,
+  files: filesShape.isRequired,
+  createFile: PropTypes.func.isRequired,
+  deleteFile: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(Files);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Files));

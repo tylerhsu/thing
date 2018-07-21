@@ -12,6 +12,10 @@
     "lint": "eslint .",
     "test:watch": "npm test -- --watch"
   },
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
+  },
   "author": "Engineering at Tempus: People Task Force",
   "license": "MIT",
   "dependencies": {
@@ -20,6 +24,7 @@
     "babel-register": "^6.26.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.1",
+    "busboy": "^0.2.14",
     "classnames": "^2.2.6",
     "express": "^4.15.2",
     "express-session": "^1.15.6",

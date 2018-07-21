@@ -5,6 +5,7 @@ import patients from './patients';
 import appointments from './appointments';
 import doctors from './doctors';
 import me from './me';
+import files from './files';
 import requireAuth from '../middleware/requireAuth';
 
 export default Router()
@@ -19,6 +20,7 @@ export default Router()
   .use(requireAuth)
   .use('/patients', patients)
   .use('/appointments', appointments)
-  .use('/doctors', doctors);
+  .use('/doctors', doctors)
+  .use('/files', files);
 // No routes matched
 

@@ -10,10 +10,14 @@ export default Router()
   })
 
   .get('/:id', async (req, res) => {
-    const result = await Api.Appointment.get(req.params.id);
-    res
-      .status(result.error ? 500 : 200)
-      .send(result);
+    const result = await Api.Appointment.get({ id: req.params.id });
+    if (result.error) {
+      res.status(500).send(result);
+    } else if (!result.length) {
+      res.status(404).send('Appointment not found');
+    } else {
+      res.status(200).send(result[0]);
+    }
   })
 
   .post('/', async (req, res) => {

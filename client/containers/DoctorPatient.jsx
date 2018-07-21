@@ -9,8 +9,6 @@ import Files from '../components/Files';
 import { shape as patientShape, fetchPatient } from '../reducers/patient';
 import { shape as appointmentsShape } from '../reducers/appointments';
 
-import { files } from '../dummyData';
-
 class Patient extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +48,7 @@ class Patient extends Component {
           </div>
           <div>
             <h3>Patient Files</h3>
-            <Files files={files} />
+            <Files />
           </div>
         </div>
       );
@@ -80,9 +78,9 @@ const mapDispatchToProps = { fetchPatient };
 Patient.propTypes = {
   patient: patientShape.isRequired,
   appointments: appointmentsShape.isRequired,
-  pendingAppts: PropTypes.arrayOf(PropTypes.object),
-  upcomingAppts: PropTypes.arrayOf(PropTypes.object),
-  pasAppts: PropTypes.arrayOf(PropTypes.object),
+  pendingAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  upcomingAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  pastAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
   fetchPatient: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
