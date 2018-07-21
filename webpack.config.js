@@ -8,6 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
+    publicPath: '/'
   },
   context: __dirname,
   devtool: 'source-map',
@@ -21,7 +22,7 @@ module.exports = {
       path: path.resolve(__dirname, 'public'),
       filename: 'index.html',
     }),
-    new ExtractTextPlugin({ filename: './stylesheets/style.css' }),
+    new ExtractTextPlugin({ filename: 'stylesheets/style.css' }),
   ],
   module: {
     rules: [
