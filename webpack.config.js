@@ -27,7 +27,8 @@ module.exports = {
     }),
     new ExtractTextPlugin({ filename: 'stylesheets/style.css' }),
     new webpack.DefinePlugin({
-      DB_CONSTANTS: JSON.stringify(DB_CONSTANTS)
+      STATUSES: JSON.stringify(DB_CONSTANTS.STATUSES),
+      ROLES: JSON.stringify(DB_CONSTANTS.ROLES)
     })
   ],
   module: {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Collapse } from 'react-collapse';
 import Card, { CardContent } from 'material-ui/Card';
 import Button from 'material-ui/Button';
@@ -7,6 +8,8 @@ import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 import moment from 'moment';
+
+import { updateAppointment } from '../reducers/appointments';
 
 const styles = {
   card: {
@@ -43,6 +46,7 @@ class Appointment extends Component {
     };
     this.toggleDrawer = this.toggleDrawer.bind(this);
     this.onMessageChange = this.onMessageChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   onMessageChange(evt) {
@@ -53,9 +57,16 @@ class Appointment extends Component {
     this.setState({ drawerOpen: !this.state.drawerOpen });
   }
 
+  handleSubmit() {
+    this.props.updateAppointment(this.props.appt.id, {
+      status: STATUSES.DECLINED,
+      message: this.state.message
+    });
+  }
+
   render() {
     const { appt, classes } = this.props;
-    const clickable = appt.status === DB_CONSTANTS.STATUSES.PENDING;
+    const clickable = appt.status === STATUSES.PENDING;
     return (
       <Card key={appt.id} className={classes.card}>
         <CardContent className={clickable ? classes.pointer : null} onClick={clickable ? this.toggleDrawer : () => {}}>
@@ -69,7 +80,7 @@ class Appointment extends Component {
           </div>
         </CardContent>
         {
-          appt.status === DB_CONSTANTS.STATUSES.PENDING ?
+          clickable ?
             <Collapse isOpened={this.state.drawerOpen}>
               <Divider />
               <CardContent>
@@ -106,6 +117,10 @@ class Appointment extends Component {
   }
 }
 
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = { updateAppointment };
+
 Appointment.propTypes = {
   appt: PropTypes.shape({
     id: PropTypes.string,
@@ -114,6 +129,7 @@ Appointment.propTypes = {
     datetime: PropTypes.string,
   }),
   classes: PropTypes.object.isRequired,
+  updateAppointment: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(Appointment);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Appointment));

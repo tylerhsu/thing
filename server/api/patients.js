@@ -26,7 +26,7 @@ export default Router()
   .get('/:id', (req, res) => {
     const patient = Api.Patient.get({ id: req.params.id })[0];
     if (!patient) {
-      return res.status(404).send();
+      return res.status(404).send('Patient not found');
     }
     res.status(200).send(hydratePatientData(patient));
   });

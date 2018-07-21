@@ -5,6 +5,33 @@ import { FETCH_PATIENT_BEGIN } from './patient';
 import { FETCH_PATIENT_SUCCESS } from './patient';
 import { FETCH_PATIENT_ERROR } from './patient';
 
+export const UPDATE_APPOINTMENT_BEGIN = 'UPDATE_APPOINTMENT_BEGIN';
+export const UPDATE_APPOINTMENT_SUCCESS = 'UPDATE_APPOINTMENT_SUCCESS';
+export const UPDATE_APPOINTMENT_ERROR = 'UPDATE_APPOINTMENT_ERROR';
+
+const updateAppointmentBegin = () => ({
+  type: UPDATE_APPOINTMENT_BEGIN
+});
+
+const updateAppointmentSuccess = (appointment) => ({
+  type: UPDATE_APPOINTMENT_SUCCESS,
+  payload: appointment
+});
+
+const updateAppointmentError = (error) => ({
+  type: UPDATE_APPOINTMENT_ERROR,
+  payload: error,
+  error: true
+});
+
+export const updateAppointment = (id, body) =>
+  (dispatch) => {
+    dispatch(updateAppointmentBegin());
+    axios.put(`/api/appointments/${id}`, body)
+      .then((res) => dispatch(updateAppointmentSuccess(res.data)))
+      .catch((error) => dispatch(updateAppointmentError(error)));
+  }
+
 const defaultState = {
   loading: null,
   payload: null,
@@ -44,6 +71,11 @@ const appointmentsReducer = (state = defaultState, action) => {
         error: true
       };
       break;
+    case UPDATE_APPOINTMENT_SUCCESS:
+      newState = {
+        ...state,
+        payload: state.payload.map(appt => appt.id === action.payload.id ? action.payload : appt)
+      };
     default:
       return state;
   }

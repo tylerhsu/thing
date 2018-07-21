@@ -56,7 +56,7 @@ class Patient extends Component {
       );
     } else if (patient.error) {
       return (
-        <div>{patient.payload.message}</div>
+        <div className="container">{patient.payload.response.data || patient.payload.message}</div>
       );
     } else {
       return <div />;
@@ -69,9 +69,9 @@ const mapStateToProps = ({ patient, appointments }) => {
   return {
     patient,
     appointments,
-    pendingAppts: appts.filter((appt) => appt.status === DB_CONSTANTS.STATUSES.PENDING),
-    upcomingAppts: appts.filter((appt) => appt.status === DB_CONSTANTS.STATUSES.CONFIRMED && new Date(appt.datetime) > new Date()),
-    pastAppts: appts.filter((appt) => appt.status === DB_CONSTANTS.STATUSES.CONFIRMED && new Date(appt.datetime) <= new Date())
+    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING),
+    upcomingAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) > new Date()),
+    pastAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) <= new Date())
   };
 };
 

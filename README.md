@@ -34,5 +34,6 @@ Sessions are persisted in memory on the server.  Log in, visit an access-restric
 ### Replace dummy data with api requests
 I've replaced uses of hard-coded dummy data on the client-side with api requests that return db records.
 
-### Fixed bugs
+### Fixed bugs in boilerplate
 - c8bbf87: Fixed a bug where navigating directly to a url more than one level deep, such as /patients/1234, would always render a blank page.  This was caused by a webpack configuration that produced relative urls for static assets, so the browser navigating to /patients/1234 would try to load the js bundle from /patients/1234/bundle.js.
+- f0ef513: Fixed a bug where appointment routes would return the wrong status codes.
