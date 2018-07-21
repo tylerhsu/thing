@@ -1,12 +1,16 @@
 # Tyler Hsu's Patient Portal
 This is my implementation of option 1, the patient portal.  I've used the provided [boilerplate project](https://github.com/tempuslabs/challenges/tree/master/patient-portal).
 
+Note: I've used [nvm](https://github.com/creationix/nvm) to make it as easy as possible for you to run this on the same node/npm version as me.
+
 ## Run the starting point
 
-1. `npm i`
-2. `npm run seed`
-3. `npm run build`
-4. `npm start`
+1. [Install nvm](https://github.com/creationix/nvm#installation)
+2. `nvm install`
+3. `npm i`
+4. `npm run seed`
+5. `npm run build`
+6. `npm start`
 
 ## Directory structure
 `/assets` contains stylesheets.
@@ -35,8 +39,8 @@ Sessions are persisted in memory on the server.  Log in, visit an access-restric
 I've replaced uses of hard-coded dummy data on the client-side with api requests that return db records.
 
 ### Files API
-Implemented api for storing and retrieving files & file metadata.
+Implemented api for storing, retrieving, and deleting files & file metadata.
 
-### Fixed bugs in boilerplate
+### Fixed bugs
 - c8bbf87: Fixed a bug where navigating directly to a url more than one level deep, such as /patients/1234, would always render a blank page.  This was caused by a webpack configuration that produced relative urls for static assets, so a browser navigating to /patients/1234 would try to load the js bundle from /patients/1234/bundle.js.
 - f0ef513: Fixed a bug where appointment routes would return 500 on success.
