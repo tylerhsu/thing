@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 import { Collapse } from 'react-collapse';
-import Card, { CardContent } from 'material-ui/Card';
+import Card, { CardContent, CardActions } from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Divider from 'material-ui/Divider';
 import TextField from 'material-ui/TextField';
@@ -34,6 +35,9 @@ const styles = {
   },
   pointer: {
     cursor: 'pointer'
+  },
+  declined: {
+    color: 'lightgray'
   }
 };
 
@@ -47,6 +51,7 @@ class Appointment extends Component {
     this.toggleDrawer = this.toggleDrawer.bind(this);
     this.onMessageChange = this.onMessageChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleUndo = this.handleUndo.bind(this);
   }
 
   onMessageChange(evt) {
@@ -64,12 +69,20 @@ class Appointment extends Component {
     });
   }
 
+  handleUndo() {
+    this.props.updateAppointment(this.props.appt.id, {
+      status: STATUSES.PENDING,
+      message: ''
+    });
+  }
+
   render() {
     const { appt, classes } = this.props;
     const clickable = appt.status === STATUSES.PENDING;
+    const declined = appt.status === STATUSES.DECLINED;
     return (
-      <Card key={appt.id} className={classes.card}>
-        <CardContent className={clickable ? classes.pointer : null} onClick={clickable ? this.toggleDrawer : () => {}}>
+      <Card key={appt.id} className={classnames(classes.card, { [classes.declined]: declined })}>
+        <CardContent className={classnames({ [classes.pointer]: clickable })} onClick={clickable ? this.toggleDrawer : () => {}}>
           <div className={classes.content}>
             <div>
               <div className={classes.header}>{moment(appt.datetime).format('MMMM Do, YYYY')} ({moment(appt.datetime).fromNow()})</div>
@@ -79,6 +92,12 @@ class Appointment extends Component {
             </div>
           </div>
         </CardContent>
+        { declined &&
+          <CardActions>
+            <div style={{ color: 'black' }}>Appointment declined.</div>
+            <Button size='small' onClick={this.handleUndo}>Undo</Button>
+          </CardActions>
+        }
         {
           clickable ?
             <Collapse isOpened={this.state.drawerOpen}>

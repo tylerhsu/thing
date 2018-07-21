@@ -1,35 +1,44 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import appointment from './appointment';
 
-import { FETCH_PATIENT_BEGIN } from './patient';
-import { FETCH_PATIENT_SUCCESS } from './patient';
-import { FETCH_PATIENT_ERROR } from './patient';
+import {
+  FETCH_PATIENT_BEGIN,
+  FETCH_PATIENT_SUCCESS,
+  FETCH_PATIENT_ERROR,
+} from './patient';
 
 export const UPDATE_APPOINTMENT_BEGIN = 'UPDATE_APPOINTMENT_BEGIN';
 export const UPDATE_APPOINTMENT_SUCCESS = 'UPDATE_APPOINTMENT_SUCCESS';
 export const UPDATE_APPOINTMENT_ERROR = 'UPDATE_APPOINTMENT_ERROR';
 
-const updateAppointmentBegin = () => ({
-  type: UPDATE_APPOINTMENT_BEGIN
+const updateAppointmentBegin = (id, body) => ({
+  type: UPDATE_APPOINTMENT_BEGIN,
+  id,
+  body
 });
 
-const updateAppointmentSuccess = (appointment) => ({
+const updateAppointmentSuccess = (id, body, updatedAppointment) => ({
   type: UPDATE_APPOINTMENT_SUCCESS,
-  payload: appointment
+  id,
+  body,
+  payload: updatedAppointment
 });
 
-const updateAppointmentError = (error) => ({
+const updateAppointmentError = (id, body, error) => ({
   type: UPDATE_APPOINTMENT_ERROR,
+  id,
+  body,
   payload: error,
   error: true
 });
 
 export const updateAppointment = (id, body) =>
   (dispatch) => {
-    dispatch(updateAppointmentBegin());
+    dispatch(updateAppointmentBegin(id, body));
     axios.put(`/api/appointments/${id}`, body)
-      .then((res) => dispatch(updateAppointmentSuccess(res.data)))
-      .catch((error) => dispatch(updateAppointmentError(error)));
+      .then((res) => dispatch(updateAppointmentSuccess(id, body, res.data)))
+      .catch((error) => dispatch(updateAppointmentError(id, body, error)));
   }
 
 const defaultState = {
@@ -71,11 +80,14 @@ const appointmentsReducer = (state = defaultState, action) => {
         error: true
       };
       break;
+    case UPDATE_APPOINTMENT_BEGIN:
     case UPDATE_APPOINTMENT_SUCCESS:
+    case UPDATE_APPOINTMENT_ERROR:
       newState = {
         ...state,
-        payload: state.payload.map(appt => appt.id === action.payload.id ? action.payload : appt)
+        payload: state.payload.map((appt) => appt.id === action.id ? appointment(appt, action) : appt)
       };
+      break;
     default:
       return state;
   }

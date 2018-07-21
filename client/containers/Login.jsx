@@ -63,6 +63,7 @@ class Login extends Component {
                 this.onInputChange('email', evt.target.value);
               }}
               className={classes.textField}
+              autoFocus
               fullWidth
             />
           </div>

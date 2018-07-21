@@ -69,7 +69,7 @@ const mapStateToProps = ({ patient, appointments }) => {
   return {
     patient,
     appointments,
-    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING),
+    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING || appt.offerUndo),
     upcomingAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) > new Date()),
     pastAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) <= new Date())
   };
