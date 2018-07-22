@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Appointments from './Appointments';
+import Appointments, { TYPES as APPT_TYPES } from './Appointments';
 import PatientDetails from '../components/PatientDetails';
 import Files from '../components/Files';
 
@@ -27,24 +27,11 @@ class Patient extends Component {
           <PatientDetails patient={patient.payload} />
           <div>
             <h3>Appointment Requests</h3>
-            { pendingAppts && pendingAppts.length ?
-              <Appointments appointments={pendingAppts} /> :
-              'No pending appointments'
-            }
-          </div>
-          <div>
+            <Appointments type={APPT_TYPES.PENDING} viewer={ROLES.DOCTOR} />
             <h3>Upcoming Appointments</h3>
-            { upcomingAppts && upcomingAppts.length ?
-              <Appointments appointments={upcomingAppts} /> :
-              'No upcoming appointments'
-            }
-          </div>
-          <div>
+            <Appointments type={APPT_TYPES.UPCOMING} viewer={ROLES.DOCTOR} />
             <h3>Past Appointments</h3>
-            { pastAppts && pastAppts.length ?
-              <Appointments appointments={pastAppts} /> :
-              'No past appointments'
-            }
+            <Appointments type={APPT_TYPES.PAST} viewer={ROLES.DOCTOR} />
           </div>
           <div>
             <h3>Patient Files</h3>
@@ -67,7 +54,7 @@ const mapStateToProps = ({ patient, appointments }) => {
   return {
     patient,
     appointments,
-    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING || appt.offerUndo),
+    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING || (appt.undo && appt.undo.status === STATUSES.PENDING)),
     upcomingAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) > new Date()),
     pastAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) <= new Date())
   };

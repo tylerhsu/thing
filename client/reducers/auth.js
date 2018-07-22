@@ -54,7 +54,7 @@ export const fetchMe = () =>
   (dispatch) => {
     dispatch(fetchMeBegin());
     axios.get('/api/me')
-      .then((res) => dispatch(fetchMeSuccess(res.data)))
+      .then((res) => dispatch(fetchMeSuccess(res.data || null)))
       .catch((error) => dispatch(fetchMeError(error)));
   }
 

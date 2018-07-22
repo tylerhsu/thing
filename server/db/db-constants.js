@@ -2,6 +2,7 @@ export const STATUSES = {
   PENDING: 'pending',
   CONFIRMED: 'confirmed',
   DECLINED: 'declined',
+  CANCELED: 'canceled',
 };
 
 export const ROLES = {

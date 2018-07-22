@@ -9,8 +9,11 @@ const appointmentReducer = (state = {}, action) => {
   switch (action.type) {
     case UPDATE_APPOINTMENT_SUCCESS:
       newState = action.payload;
-      if (action.payload.status === STATUSES.DECLINED) {
-        newState.offerUndo = true;
+      if (action.payload.status === STATUSES.DECLINED || action.payload.status === STATUSES.CANCELED) {
+        newState.undo = {
+          status: state.status,
+          message: state.message || ''
+        };
       }
       break;
     default:

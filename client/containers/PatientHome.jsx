@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Button from 'material-ui/Button';
 
-import Appointments from './Appointments';
+import Appointments, { TYPES as APPT_TYPES } from './Appointments';
 import PatientDetails from '../components/PatientDetails';
 import Files from '../components/Files';
 import { withStyles } from 'material-ui/styles';
 
-import { patient, pendingAppts, pastAppts, files } from '../dummyData';
+import { shape as patientShape, fetchPatient } from '../reducers/patient';
+import { shape as userShape } from '../reducers/auth';
 
 const styles = {
   buttonWrapper: {
@@ -21,41 +23,61 @@ const styles = {
   },
 };
 
-const PatientHome = ({ classes }) => (
-  <div className="container">
-    <h2>Welcome back, Luna Lovegood.</h2>
-    <div className="profile">
-      <div>
-        <h3>Your Profile</h3>
-        <PatientDetails patient={patient} />
+class PatientHome extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentWillMount() {
+    const { patient, fetchPatient } = this.props;
+    if (!patient.payload && !patient.loading) {
+      fetchPatient();
+    }
+  }
+  
+  render() {
+    const { user, patient, classes } = this.props;
+    return (
+      <div className="container">
+        <h2>Welcome back, {user.payload.firstName} {user.payload.lastName}.</h2>
+        <div className="profile">
+          {patient.payload && patient.payload.id && 
+            <div>
+              <h3>Your Profile</h3>
+              <PatientDetails patient={patient.payload} />
+            </div>
+          }
+          <div className={classes.buttonWrapper}>
+            <Button variant="raised" color="primary">
+              <Link to="/request-appointment" className={classes.button}>Request Appointment</Link>
+            </Button>
+          </div>
+        </div>
+        <div>
+          <h3>Upcoming Appointments</h3>
+          <Appointments type={APPT_TYPES.UPCOMING} viewer={ROLES.PATIENT} />
+          <h3>Pending Appointments</h3>
+          <Appointments type={APPT_TYPES.PENDING} viewer={ROLES.PATIENT} />
+          <h3>Past Appointments</h3>
+          <Appointments type={APPT_TYPES.PAST} viewer={ROLES.PATIENT} /> 
+        </div>
+        <div>
+          <h3>Your Files</h3>
+          <Files />
+        </div>
       </div>
-      <div className={classes.buttonWrapper}>
-        <Button variant="raised" color="primary">
-          <Link to="/request-appointment" className={classes.button}>Request Appointment</Link>
-        </Button>
-      </div>
-    </div>
-    <div>
-      <h3>Upcoming Appointments</h3>
-      <div>No upcoming appointments.</div>
-      <h3>Pending Appointments</h3>
-      <Appointments
-        appointments={pendingAppts}
-        type="pending"
-        viewer="patient"
-      />
-      <h3>Past Appointments</h3>
-      <Appointments appointments={pastAppts} type="past" viewer="patient" />
-    </div>
-    <div>
-      <h3>Your Files</h3>
-      <Files files={files} />
-    </div>
-  </div>
-);
+    );
+  }
+}
+
+const mapStateToProps = ({ user, patient }) => ({ user, patient });
+
+const mapDispatchToProps = { fetchPatient };
 
 PatientHome.propTypes = {
-  classes: PropTypes.object.isRequired,
+  user: userShape.isRequired,
+  patient: patientShape.isRequired,
+  fetchPatient: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(PatientHome);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(PatientHome));

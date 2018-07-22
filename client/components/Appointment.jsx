@@ -36,7 +36,7 @@ const styles = {
   pointer: {
     cursor: 'pointer'
   },
-  declined: {
+  inactive: {
     color: 'lightgray'
   }
 };
@@ -50,8 +50,9 @@ class Appointment extends Component {
     };
     this.toggleDrawer = this.toggleDrawer.bind(this);
     this.onMessageChange = this.onMessageChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDecline = this.handleDecline.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   onMessageChange(evt) {
@@ -62,7 +63,7 @@ class Appointment extends Component {
     this.setState({ drawerOpen: !this.state.drawerOpen });
   }
 
-  handleSubmit() {
+  handleDecline() {
     this.props.updateAppointment(this.props.appt.id, {
       status: STATUSES.DECLINED,
       message: this.state.message
@@ -71,18 +72,22 @@ class Appointment extends Component {
 
   handleUndo() {
     this.props.updateAppointment(this.props.appt.id, {
-      status: STATUSES.PENDING,
-      message: ''
+      ...this.props.appt.undo
+    });
+  }
+
+  handleCancel() {
+    console.log(STATUSES);
+    this.props.updateAppointment(this.props.appt.id, {
+      status: STATUSES.CANCELED
     });
   }
 
   render() {
-    const { appt, classes } = this.props;
-    const clickable = appt.status === STATUSES.PENDING;
-    const declined = appt.status === STATUSES.DECLINED;
+    const { appt, mayDecline, mayCancel, inactive, classes } = this.props;
     return (
-      <Card key={appt.id} className={classnames(classes.card, { [classes.declined]: declined })}>
-        <CardContent className={classnames({ [classes.pointer]: clickable })} onClick={clickable ? this.toggleDrawer : () => {}}>
+      <Card key={appt.id} className={classnames(classes.card, { [classes.inactive]: inactive })}>
+        <CardContent className={classnames({ [classes.pointer]: mayDecline })} onClick={mayDecline ? this.toggleDrawer : () => {}}>
           <div className={classes.content}>
             <div>
               <div className={classes.header}>{moment(appt.datetime).format('MMMM Do, YYYY')} ({moment(appt.datetime).fromNow()})</div>
@@ -92,51 +97,68 @@ class Appointment extends Component {
             </div>
           </div>
         </CardContent>
-        { declined &&
+        { appt.status === STATUSES.DECLINED && appt.undo &&
           <CardActions>
             <div style={{ color: 'black' }}>Appointment declined.</div>
             <Button size='small' onClick={this.handleUndo}>Undo</Button>
           </CardActions>
         }
-        {
-          clickable ?
-            <Collapse isOpened={this.state.drawerOpen}>
-              <Divider />
-              <CardContent>
-                <div>
-                  <div className={classes.header}>Message to Patient</div>
-                  <form>
-                    <div className={classes.marginBottom}>
-                      <TextField
-                        name="message"
-                        onChange={this.onMessageChange}
-                        value={this.state.message}
-                        inputProps={{ style: { fontSize: 11 } }}
-                        multiline
-                        fullWidth
-                      />
-                    </div>
-                    <div>
-                      <Button
-                        onClick={this.handleSubmit}
-                        variant="raised"
-                        color="primary"
-                        className={classes.action}
-                      >
+        { appt.status === STATUSES.CANCELED && appt.undo &&
+          <CardActions>
+            <div style={{ color: 'black' }}>Appointment canceled.</div>
+            <Button size='small' onClick={this.handleUndo}>Undo</Button>
+          </CardActions>
+        }
+        { mayCancel &&
+          <CardActions>
+            <Button size='small' onClick={this.handleCancel}>Cancel appointment</Button>
+          </CardActions>
+        }
+        { mayDecline &&
+          <Collapse isOpened={this.state.drawerOpen}>
+            <Divider />
+            <CardContent>
+              <div>
+                <div className={classes.header}>Message to Patient</div>
+                <form>
+                  <div className={classes.marginBottom}>
+                    <TextField
+                      name="message"
+                      onChange={this.onMessageChange}
+                      value={this.state.message}
+                      inputProps={{ style: { fontSize: 11 } }}
+                      multiline
+                      fullWidth
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      onClick={this.handleDecline}
+                      variant="raised"
+                      color="primary"
+                      className={classes.action}
+                    >
                       Decline Request
                     </Button>
-                    </div>
-                  </form>
-                </div>
-              </CardContent>
-            </Collapse> : null
+                  </div>
+                </form>
+              </div>
+            </CardContent>
+          </Collapse>
         }
       </Card>
     );
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state, ownProps) => ({
+  mayDecline: ownProps.appt.status === STATUSES.PENDING &&
+    ownProps.viewer === ROLES.DOCTOR,
+  mayCancel: (ownProps.appt.status === STATUSES.PENDING || ownProps.appt.status === STATUSES.CONFIRMED) &&
+    new Date(ownProps.appt.datetime) > new Date() &&
+    ownProps.viewer === ROLES.PATIENT,
+  inactive: ownProps.appt.status === STATUSES.DECLINED || ownProps.appt.status === STATUSES.CANCELED
+});
 
 const mapDispatchToProps = { updateAppointment };
 
@@ -148,7 +170,8 @@ Appointment.propTypes = {
     datetime: PropTypes.string,
   }),
   classes: PropTypes.object.isRequired,
-  updateAppointment: PropTypes.func.isRequired
+  updateAppointment: PropTypes.func.isRequired,
+  viewer: PropTypes.oneOf(_.values(ROLES)).isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Appointment));

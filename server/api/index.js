@@ -6,7 +6,7 @@ import appointments from './appointments';
 import doctors from './doctors';
 import me from './me';
 import files from './files';
-import requireAuth from '../middleware/requireAuth';
+import { requireAuth } from './middleware';
 
 export default Router()
 // Quick way to check that API route is getting hit

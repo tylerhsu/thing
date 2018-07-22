@@ -5,7 +5,7 @@ import Api from '../db/db-api';
 
 const userProperties = ['firstName', 'lastName', 'email'];
 
-function hydratePatientData(patient) {
+export function hydratePatientData(patient) {
   return {
     ...patient,
     ...db
@@ -25,12 +25,16 @@ export default Router()
     res.status(200).send(allPatients.map(hydratePatientData));
   })
   .get('/:id', (req, res) => {
-    const result = Api.Patient.get({ id: req.params.id });
-    if (result.error) {
-      res.status(500).send(result);
-    } else if (!result.length) {
-      res.status(404).send('Patient not found');
-    } else {
-      res.status(200).send(hydratePatientData(result[0]));
-    }
+    getPatient(req.params.id, req, res);
   });
+
+export function getPatient(id, req ,res) {
+  const result = Api.Patient.get({ id });
+  if (result.error) {
+    res.status(500).send(result);
+  } else if (!result.length) {
+    res.status(404).send('Patient not found');
+  } else {
+    res.status(200).send(hydratePatientData(result[0]));
+  }
+}

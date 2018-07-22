@@ -20,13 +20,15 @@ const fetchPatientError = (error) => ({
   error: true
 });
 
-export const fetchPatient = (id) =>
-  (dispatch) => {
+export const fetchPatient = (id) => {
+  const url = id ? `/api/patients/${id}` : '/api/me/patient';
+  return (dispatch) => {
     dispatch(fetchPatientBegin());
-    axios.get(`/api/patients/${id}`)
+    axios.get(url)
       .then((res) => dispatch(fetchPatientSuccess(res.data)))
       .catch((error) => dispatch(fetchPatientError(error)));
   }
+}
 
 const defaultState = {
   loading: null,
