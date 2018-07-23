@@ -1,6 +1,8 @@
 # Tyler Hsu's Patient Portal
 This is my implementation of option 1, the patient portal.  I've used the provided [boilerplate project](https://github.com/tempuslabs/challenges/tree/master/patient-portal).
 
+I've zipped up a clean checkout, so you have to [install dependencies and stuff](#run-the-starting-point).
+
 Note: I've used [nvm](https://github.com/creationix/nvm) to make it as easy as possible for you to run this on the same node/npm version as me.
 
 ## Run the starting point
