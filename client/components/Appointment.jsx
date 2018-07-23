@@ -53,6 +53,7 @@ class Appointment extends Component {
     this.handleDecline = this.handleDecline.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
   onMessageChange(evt) {
@@ -82,11 +83,18 @@ class Appointment extends Component {
     });
   }
 
+  handleConfirm() {
+    this.props.updateAppointment(this.props.appt.id, {
+      status: STATUSES.CONFIRMED,
+      message: ''
+    });
+  }
+
   render() {
-    const { appt, mayDecline, mayCancel, inactive, viewer, classes } = this.props;
+    const { appt, mayDecline, mayCancel, mayConfirm, inactive, viewer, classes } = this.props;
     return (
       <Card key={appt.id} className={classnames(classes.card, { [classes.inactive]: inactive })}>
-        <CardContent className={classnames({ [classes.pointer]: mayDecline })} onClick={mayDecline ? this.toggleDrawer : () => {}}>
+        <CardContent>
           <div className={classes.content}>
             <div>
               <div className={classes.header}>{moment(appt.datetime).format('MMMM Do, YYYY')} ({moment(appt.datetime).fromNow()})</div>
@@ -111,11 +119,19 @@ class Appointment extends Component {
             <Button size='small' onClick={this.handleUndo}>Undo</Button>
           </CardActions>
         }
-        { mayCancel &&
+        { (mayCancel || mayConfirm || mayDecline) && (
           <CardActions>
-            <Button size='small' onClick={this.handleCancel}>Cancel {appt.status === STATUSES.PENDING ? 'appointment request' : 'appointment'}</Button>
+            { mayCancel && (
+                <Button size='small' onClick={this.handleCancel}>Cancel {appt.status === STATUSES.PENDING ? 'appointment request' : 'appointment'}</Button>
+            )}
+            { mayConfirm && (
+                <Button size='small' onClick={this.handleConfirm}>Confirm</Button>
+            )}
+            { mayDecline && (
+                <Button size='small' onClick={this.toggleDrawer}>Decline</Button>
+            )}
           </CardActions>
-        }
+        )}
         { mayDecline &&
           <Collapse isOpened={this.state.drawerOpen}>
             <Divider />
@@ -159,6 +175,8 @@ const mapStateToProps = (state, ownProps) => ({
   mayCancel: (ownProps.appt.status === STATUSES.PENDING || ownProps.appt.status === STATUSES.CONFIRMED) &&
     new Date(ownProps.appt.datetime) > new Date() &&
     ownProps.viewer === ROLES.PATIENT,
+  mayConfirm: ownProps.appt.status === STATUSES.PENDING &&
+    ownProps.viewer === ROLES.DOCTOR,
   inactive: ownProps.appt.status === STATUSES.DECLINED || ownProps.appt.status === STATUSES.CANCELED
 });
 
@@ -176,6 +194,7 @@ Appointment.propTypes = {
   viewer: PropTypes.oneOf(_.values(ROLES)).isRequired,
   mayDecline: PropTypes.bool.isRequired,
   mayCancel: PropTypes.bool.isRequired,
+  mayConfirm: PropTypes.bool.isRequired,
   inactive: PropTypes.bool.isRequired
 };
 

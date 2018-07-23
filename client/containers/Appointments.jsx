@@ -31,12 +31,16 @@ class Appointments extends Component {
 
 const mapStateToProps = ({ appointments }, ownProps) => {
   let appts = appointments.payload && Array.isArray(appointments.payload) ? appointments.payload : [];
+  appts = filterByType(appts, ownProps.type, ownProps.viewer);
+  if (ownProps.doctorId) {
+    appts = appts.filter(appt => appt.doctor_id === ownProps.doctorId);
+  }
   return {
-    appointments: _.sortBy(getAppointments(appts, ownProps.type, ownProps.viewer), 'datetime')
+    appointments: _.sortBy(appts, 'datetime')
   };
 };
 
-function getAppointments(appts, type, viewer) {
+function filterByType(appts, type, viewer) {
   switch (type) {
     case TYPES.PENDING: return appts.filter(viewer === ROLES.PATIENT ? inStatus(STATUSES.PENDING, STATUSES.DECLINED) : inStatus(STATUSES.PENDING))
     case TYPES.UPCOMING: return appts.filter(inStatus(STATUSES.CONFIRMED)).filter(inFuture);
@@ -60,7 +64,8 @@ function inPast(appt) {
 Appointments.propTypes = {
   appointments: PropTypes.arrayOf(PropTypes.object).isRequired,
   viewer: PropTypes.oneOf(_.values(ROLES)).isRequired,
-  type: PropTypes.oneOf(_.values(TYPES)).isRequired
+  type: PropTypes.oneOf(_.values(TYPES)).isRequired,
+  doctorId: PropTypes.string
 };
 
 export default connect(mapStateToProps)(Appointments);

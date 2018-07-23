@@ -6,8 +6,8 @@ import Appointments, { TYPES as APPT_TYPES } from './Appointments';
 import PatientDetails from '../components/PatientDetails';
 import Files from '../components/Files';
 
+import { shape as userShape } from '../reducers/auth';
 import { shape as patientShape, fetchPatient } from '../reducers/patient';
-import { shape as appointmentsShape } from '../reducers/appointments';
 
 class Patient extends Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class Patient extends Component {
   }
 
   render() {
-    const { patient, pendingAppts, upcomingAppts, pastAppts } = this.props;
+    const { user, patient, pendingAppts, upcomingAppts, pastAppts } = this.props;
     if (patient.payload && !patient.error) {
       return (
         <div className="container">
@@ -27,11 +27,11 @@ class Patient extends Component {
           <PatientDetails patient={patient.payload} />
           <div>
             <h3>Appointment Requests</h3>
-            <Appointments type={APPT_TYPES.PENDING} viewer={ROLES.DOCTOR} />
+            <Appointments type={APPT_TYPES.PENDING} viewer={ROLES.DOCTOR} doctorId={user.payload.id} />
             <h3>Upcoming Appointments</h3>
-            <Appointments type={APPT_TYPES.UPCOMING} viewer={ROLES.DOCTOR} />
+            <Appointments type={APPT_TYPES.UPCOMING} viewer={ROLES.DOCTOR} doctorId={user.payload.id} />
             <h3>Past Appointments</h3>
-            <Appointments type={APPT_TYPES.PAST} viewer={ROLES.DOCTOR} />
+            <Appointments type={APPT_TYPES.PAST} viewer={ROLES.DOCTOR} doctorId={user.payload.id} />
           </div>
           <div>
             <h3>Patient Files</h3>
@@ -41,7 +41,7 @@ class Patient extends Component {
       );
     } else if (patient.error) {
       return (
-        <div className="container">{patient.payload.response.data || patient.payload.message}</div>
+        <div className="container">{patient.payload.message}</div>
       );
     } else {
       return <div />;
@@ -49,25 +49,13 @@ class Patient extends Component {
   }
 }
 
-const mapStateToProps = ({ patient, appointments }) => {
-  let appts = appointments.payload && Array.isArray(appointments.payload) ? appointments.payload : [];
-  return {
-    patient,
-    appointments,
-    pendingAppts: appts.filter((appt) => appt.status === STATUSES.PENDING || (appt.undo && appt.undo.status === STATUSES.PENDING)),
-    upcomingAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) > new Date()),
-    pastAppts: appts.filter((appt) => appt.status === STATUSES.CONFIRMED && new Date(appt.datetime) <= new Date())
-  };
-};
+const mapStateToProps = ({ user, patient }) => ({ user, patient });
 
 const mapDispatchToProps = { fetchPatient };
 
 Patient.propTypes = {
+  user: userShape.isRequired,
   patient: patientShape.isRequired,
-  appointments: appointmentsShape.isRequired,
-  pendingAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
-  upcomingAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
-  pastAppts: PropTypes.arrayOf(PropTypes.object).isRequired,
   fetchPatient: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
