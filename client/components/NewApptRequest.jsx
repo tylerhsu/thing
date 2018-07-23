@@ -65,7 +65,10 @@ class NewApptRequest extends Component {
         purpose: this.state.purpose,
         patient_id: this.props.patient.payload.id,
         doctor_id: this.state.doctor_id
-      });
+      })
+        .then(() => {
+          this.props.history.push('/');
+        });
     }
   }
 
@@ -132,6 +135,7 @@ const mapDispatchToProps = { createAppointment, fetchDoctors, fetchPatient };
 
 NewApptRequest.propTypes = {
   classes: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   patient: patientShape.isRequired,
   doctors: doctorsShape.isRequired,
   appointments: appointmentsShape.isRequired,

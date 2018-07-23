@@ -66,7 +66,7 @@ const createAppointmentError = (body, error) => ({
 export const createAppointment = (body) =>
   (dispatch) => {
     dispatch(createAppointmentBegin(body));
-    axios.post('/api/appointments', body)
+    return axios.post('/api/appointments', body)
       .then((res) => dispatch(createAppointmentSuccess(body, res.data)))
       .catch((error) => dispatch(createAppointmentError(body, error)));
   }
