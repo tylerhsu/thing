@@ -35,7 +35,7 @@ class Patient extends Component {
           </div>
           <div>
             <h3>Patient Files</h3>
-            <Files />
+            <Files mayDelete={true} />
           </div>
         </div>
       );

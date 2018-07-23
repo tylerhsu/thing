@@ -77,14 +77,13 @@ class Appointment extends Component {
   }
 
   handleCancel() {
-    console.log(STATUSES);
     this.props.updateAppointment(this.props.appt.id, {
       status: STATUSES.CANCELED
     });
   }
 
   render() {
-    const { appt, mayDecline, mayCancel, inactive, classes } = this.props;
+    const { appt, mayDecline, mayCancel, inactive, viewer, classes } = this.props;
     return (
       <Card key={appt.id} className={classnames(classes.card, { [classes.inactive]: inactive })}>
         <CardContent className={classnames({ [classes.pointer]: mayDecline })} onClick={mayDecline ? this.toggleDrawer : () => {}}>
@@ -94,6 +93,9 @@ class Appointment extends Component {
               <div>
                 {appt.purpose}
               </div>
+              { (appt.status === STATUSES.DECLINED && viewer === ROLES.PATIENT) && (
+                  <div style={{ color: 'black', marginTop: '1em' }}>This appointment has been declined. Message from the doctor: <em>"{appt.message}"</em></div>
+              )}
             </div>
           </div>
         </CardContent>
@@ -111,7 +113,7 @@ class Appointment extends Component {
         }
         { mayCancel &&
           <CardActions>
-            <Button size='small' onClick={this.handleCancel}>Cancel appointment</Button>
+            <Button size='small' onClick={this.handleCancel}>Cancel {appt.status === STATUSES.PENDING ? 'appointment request' : 'appointment'}</Button>
           </CardActions>
         }
         { mayDecline &&
@@ -171,7 +173,10 @@ Appointment.propTypes = {
   }),
   classes: PropTypes.object.isRequired,
   updateAppointment: PropTypes.func.isRequired,
-  viewer: PropTypes.oneOf(_.values(ROLES)).isRequired
+  viewer: PropTypes.oneOf(_.values(ROLES)).isRequired,
+  mayDecline: PropTypes.bool.isRequired,
+  mayCancel: PropTypes.bool.isRequired,
+  inactive: PropTypes.bool.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Appointment));

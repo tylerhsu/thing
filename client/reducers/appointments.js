@@ -41,6 +41,36 @@ export const updateAppointment = (id, body) =>
       .catch((error) => dispatch(updateAppointmentError(id, body, error)));
   }
 
+export const CREATE_APPOINTMENT_BEGIN = 'CREATE_APPOINTMENT_BEGIN';
+export const CREATE_APPOINTMENT_SUCCESS = 'CREATE_APPOINTMENT_SUCCESS';
+export const CREATE_APPOINTMENT_ERROR = 'CREATE_APPOINTMENT_ERROR';
+
+const createAppointmentBegin = (body) => ({
+  type: CREATE_APPOINTMENT_BEGIN,
+  body
+});
+
+const createAppointmentSuccess = (body, createdAppointment) => ({
+  type: CREATE_APPOINTMENT_SUCCESS,
+  body,
+  payload: createdAppointment
+});
+
+const createAppointmentError = (body, error) => ({
+  type: CREATE_APPOINTMENT_ERROR,
+  body,
+  payload: error,
+  error: true
+});
+
+export const createAppointment = (body) =>
+  (dispatch) => {
+    dispatch(createAppointmentBegin(body));
+    axios.post('/api/appointments', body)
+      .then((res) => dispatch(createAppointmentSuccess(body, res.data)))
+      .catch((error) => dispatch(createAppointmentError(body, error)));
+  }
+
 const defaultState = {
   loading: null,
   payload: null,
@@ -74,10 +104,20 @@ const appointmentsReducer = (state = defaultState, action) => {
       };
       break;
     case FETCH_PATIENT_ERROR:
+    case CREATE_APPOINTMENT_ERROR:
       newState = {
         loading: false,
         payload: action.payload,
         error: true
+      };
+      break;
+    case CREATE_APPOINTMENT_SUCCESS:
+      newState = {
+        ...state,
+        payload: [
+          ...state.payload,
+          action.payload
+        ]
       };
       break;
     case UPDATE_APPOINTMENT_BEGIN:

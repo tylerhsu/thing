@@ -52,7 +52,7 @@ class Files extends Component {
   }
 
   render() {
-    const { classes, files } = this.props;
+    const { classes, files, mayDelete } = this.props;
     return (
       <div className={classes.container}>
         {
@@ -69,7 +69,9 @@ class Files extends Component {
                     <a href={`/api/files/${file.id}/download`}>
                       <ListItemText primary={file.name} />
                     </a>
-                    <IconButton onClick={this.handleFileDelete(file.id)}><Icon>delete_forever</Icon></IconButton>
+                    { mayDelete &&
+                      <IconButton onClick={this.handleFileDelete(file.id)}><Icon>delete</Icon></IconButton>
+                    }
                   </ListItem>
                 ))}
             </List> :
@@ -98,7 +100,8 @@ Files.propTypes = {
   patient: patientShape.isRequired,
   files: filesShape.isRequired,
   createFile: PropTypes.func.isRequired,
-  deleteFile: PropTypes.func.isRequired
+  deleteFile: PropTypes.func.isRequired,
+  mayDelete: PropTypes.bool
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Files));

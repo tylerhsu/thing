@@ -32,21 +32,21 @@ class Appointments extends Component {
 const mapStateToProps = ({ appointments }, ownProps) => {
   let appts = appointments.payload && Array.isArray(appointments.payload) ? appointments.payload : [];
   return {
-    appointments: getAppointments(appts, ownProps.type)
+    appointments: _.sortBy(getAppointments(appts, ownProps.type, ownProps.viewer), 'datetime')
   };
 };
 
-function getAppointments(appts, type) {
+function getAppointments(appts, type, viewer) {
   switch (type) {
-    case TYPES.PENDING: return appts.filter(inStatus(STATUSES.PENDING));
+    case TYPES.PENDING: return appts.filter(viewer === ROLES.PATIENT ? inStatus(STATUSES.PENDING, STATUSES.DECLINED) : inStatus(STATUSES.PENDING))
     case TYPES.UPCOMING: return appts.filter(inStatus(STATUSES.CONFIRMED)).filter(inFuture);
     case TYPES.PAST: return appts.filter(inStatus(STATUSES.CONFIRMED)).filter(inPast);
     default: return [];
   };
 }
 
-function inStatus(status) {
-  return (appt) => appt.status === status || (appt.undo && appt.undo.status === status);
+function inStatus(...statuses) {
+  return (appt) => statuses.indexOf(appt.status) > -1 || (appt.undo && statuses.indexOf(appt.undo.status) > -1);
 }
 
 function inFuture(appt) {
